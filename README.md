@@ -1,69 +1,179 @@
-# RedPill 0.2.3
+<p align="center">
+  <img src="src/main/resources/images/redpill-icon.png" alt="RedPill logo" width="300">
+</p>
 
-RedPill is a portable Java 21 desktop utility by Corvin Develop. While active, it reproduces the original BluePill mouse/Shift sequence and can detect real keyboard/mouse activity to ask whether the automation should stop.
+# RedPill
 
-## Stack
+**RedPill** es una aplicación de escritorio en Java inspirada en *The Matrix*.  
+Su propósito es mantener el sistema “despierto” simulando actividad mínima del usuario, con una interfaz gráfica simple y control sobre su ejecución.
+
+> *“You take the red pill — you stay in Wonderland.”*
+
+---
+
+## 🧠 ¿Qué hace?
+
+- Mueve el cursor del mouse siguiendo una secuencia de actividad
+- Presiona la tecla **SHIFT**
+- Repite la acción en intervalos configurables
+- Ejecuta una acción inmediatamente al iniciar
+- Detecta actividad real del mouse o teclado
+- Permite detener o continuar el proceso cuando detecta actividad humana
+- Muestra un registro de las acciones realizadas
+- Puede permanecer ejecutándose desde el **System Tray**
+- Ayuda a evitar que el sistema entre en reposo por inactividad
+
+No espía, no envía información, no persiste ocultamente y no hace nada más.
+
+---
+
+## ⚙️ Requisitos
+
+### Desarrollo
 
 - Java 21 LTS
-- Gradle 9.7.1 (Groovy DSL)
-- Swing / AWT
-- JNativeHook 2.2.2 for global keyboard/mouse activity detection
+- Gradle 9.7.1
+- IntelliJ IDEA recomendado
 
-## Run during development
+El proyecto incluye **Gradle Wrapper**, por lo que no es necesario instalar Gradle globalmente.
+
+### Ejecución desde código fuente
 
 Windows:
 
-```powershell
-.\gradlew.bat run
+```bash
+gradlew.bat run
 ```
 
-Build:
+Linux / macOS:
 
-```powershell
-.\gradlew.bat clean build
+```bash
+./gradlew run
 ```
 
-Executable JAR:
+---
 
-```powershell
-java -jar .\build\libs\redpill-0.2.3.jar
+## 🔨 Compilación
+
+Para limpiar y compilar el proyecto:
+
+### Windows
+
+```bash
+gradlew.bat clean build
 ```
 
-Portable image for the current OS:
+### Linux / macOS
 
-```powershell
-.\gradlew.bat portableImage
+```bash
+./gradlew clean build
 ```
 
-The result is written to `build/portable/`. `jpackage` must be run separately on Windows, macOS and Linux for each native package.
+El JAR generado se encontrará en:
 
-## Activity sequence
+```text
+build/libs/
+```
 
-Each ACTION reproduces the original Python BluePill sequence:
+Puede ejecutarse utilizando:
 
-1. Move mouse to `(0, 0)`, `(0, 4)`, ... `(0, 196)`.
-2. Wait 100 ms after each movement, matching PyAutoGUI's default pause.
-3. Move to `(1, 1)` and wait 100 ms.
-4. Press and release `Shift` and wait 100 ms.
-5. Wait for the selected interval before the next ACTION.
+```bash
+java -jar build/libs/redpill-<version>.jar
+```
 
-A complete automatic ACTION therefore takes about 5.2 seconds plus the selected interval before the next one begins.
+---
 
-## Human activity
+## ▶️ Uso
 
-While RedPill is active, a global keyboard press or mouse movement pauses the current/future automatic activity and displays a 10-second confirmation dialog.
+1. Ejecuta **RedPill**
+2. Selecciona el intervalo entre acciones
+3. Presiona **START**
+4. RedPill realizará inmediatamente la primera acción
+5. Mientras permanezca activo, repetirá la secuencia según el intervalo seleccionado
 
-- **SÍ, DETENER**: stops RedPill and resets ACTIONS to `0`.
-- **NO, CONTINUAR**: resumes RedPill and waits one full interval before the next action.
-- **No response for 10 seconds**: same behavior as Continue.
+Si RedPill detecta movimiento del mouse o actividad del teclado, pausará temporalmente el proceso y preguntará si deseas detenerlo.
 
-RedPill marks the coordinates and Shift press it generates itself so those Robot events are not treated as human input.
+Si no se selecciona ninguna opción durante **10 segundos**, RedPill continuará automáticamente.
 
-## Branding
+Para detenerlo manualmente:
 
-The supplied RedPill artwork is used as the in-app title. A dedicated red-pill image is used for window, dialog and tray icons. The official Corvin Develop logo is embedded in the footer.
+- Presiona **STOP**
+- Selecciona **Sí, detener** al detectarse actividad humana
+- Sal de la aplicación desde el System Tray
 
+---
 
-## Movement log
+## 📁 Estructura del proyecto
 
-The GUI includes a scrolling Movement Log. Each action writes a start timestamp, completion timestamp, and separator, mirroring BluePill's terminal output. The first action is scheduled immediately when START is pressed; the selected interval is applied between completed actions.
+```text
+redpill/
+├── src/main/java/com/corvindevelop/redpill/
+│   ├── RedPillApplication.java
+│   │
+│   ├── core/
+│   │   ├── ActivityListener.java
+│   │   ├── HumanActivityMonitor.java
+│   │   └── MouseActivityService.java
+│   │
+│   └── ui/
+│       ├── CorvinSignaturePanel.java
+│       ├── HumanActivityDialog.java
+│       ├── MovementLogPanel.java
+│       ├── RedPillButton.java
+│       ├── RedPillLogoPanel.java
+│       ├── RedPillTheme.java
+│       ├── RedPillWindow.java
+│       ├── ResourceImages.java
+│       └── TrayController.java
+│
+├── src/main/resources/
+│   └── images/
+│
+├── docs/
+│   └── ARCHITECTURE.md
+│
+├── build.gradle
+├── settings.gradle
+├── gradlew
+└── gradlew.bat
+```
+
+---
+
+## 🔴 Filosofía
+
+- Pequeño.
+- Simple.
+- Portable.
+- Multiplataforma.
+- Sin telemetría.
+- Sin fricción.
+
+RedPill no intenta hackear ni ocultarse del sistema.
+
+Solo lo mantiene despierto.
+
+---
+
+## 🟦 BluePill
+
+**RedPill** nace como proyecto hermano de **BluePill**.
+
+Ambos persiguen el mismo objetivo utilizando enfoques diferentes:
+
+**BluePill** apuesta por la simplicidad de un pequeño script en Python.
+
+**RedPill** lleva la misma idea a Java, incorporando interfaz gráfica, detección de actividad humana, configuración y soporte multiplataforma.
+
+Dos píldoras.  
+La misma Matrix.
+
+---
+
+## 👤 Author
+
+**Sergio Cuitiño**
+
+GitHub: [@scuitinob](https://github.com/scuitinob)
+
+Developed under **Corvin Develop**.
