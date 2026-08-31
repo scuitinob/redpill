@@ -1,0 +1,93 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'com.corvindevelop'
+version = '0.2.3'
+
+def appName = 'RedPill'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+application {
+    mainClass = 'com.corvindevelop.redpill.RedPillApplication'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.github.kwhat:jnativehook:2.2.2'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
+
+jar {
+    archiveBaseName = 'redpill'
+    archiveVersion = project.version
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes('Main-Class': application.mainClass.get())
+    }
+
+    // Build a self-contained executable JAR. Runtime dependencies such as
+    // JNativeHook are unpacked into RedPill so `java -jar` works directly.
+    from {
+        configurations.runtimeClasspath.collect { dependency ->
+            dependency.isDirectory() ? dependency : zipTree(dependency)
+        }
+    }
+
+    // Signature files from dependency JARs are not valid after repackaging.
+    exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+}
+
+// Portable image for the CURRENT operating system.
+// jpackage cannot cross-package; run this task on Windows, macOS and Linux separately.
+tasks.register('portableImage', Exec) {
+    dependsOn tasks.installDist
+
+    def outputDir = layout.buildDirectory.dir('portable').get().asFile
+    def libDir = layout.buildDirectory.dir('install/redpill/lib').get().asFile
+    def mainJarName = "redpill-${project.version}.jar"
+
+    doFirst {
+        delete(outputDir)
+        outputDir.mkdirs()
+    }
+
+    commandLine(
+        'jpackage',
+        '--type', 'app-image',
+        '--name', appName,
+        '--input', libDir.absolutePath,
+        '--main-jar', mainJarName,
+        '--main-class', application.mainClass.get(),
+        '--dest', outputDir.absolutePath,
+        '--app-version', project.version,
+        '--vendor', 'Corvin Develop',
+        '--description', 'Portable cross-platform activity and keep-awake utility'
+    )
+}
+
+tasks.register('printRuntimeInfo') {
+    doLast {
+        println "Java: ${System.getProperty('java.version')}"
+        println "OS: ${System.getProperty('os.name')} ${System.getProperty('os.arch')}"
+        println "Gradle: ${gradle.gradleVersion}"
+    }
+}
