@@ -91,3 +91,34 @@ tasks.register('printRuntimeInfo') {
         println "Gradle: ${gradle.gradleVersion}"
     }
 }
+
+tasks.register('packageWindows', Exec) {
+    dependsOn build
+
+    def outputDir = layout.buildDirectory
+            .dir("package/windows")
+            .get()
+            .asFile
+
+    def libsDir = layout.buildDirectory
+            .dir("libs")
+            .get()
+            .asFile
+
+    doFirst {
+        delete outputDir
+        outputDir.mkdirs()
+    }
+
+    commandLine(
+            "${System.getProperty('java.home')}/bin/jpackage",
+            '--type', 'app-image',
+            '--name', 'RedPill',
+            '--input', libsDir.absolutePath,
+            '--main-jar', "redpill-${version}.jar",
+            '--main-class', 'com.corvindevelop.redpill.RedPillApplication',
+            '--dest', outputDir.absolutePath,
+            '--icon', file('src/main/resources/icons/redpill.ico').absolutePath,
+            '--java-options', '-Dfile.encoding=UTF-8'
+    )
+}
