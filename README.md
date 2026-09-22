@@ -4,32 +4,98 @@
 
 # RedPill
 
-**RedPill** es una aplicación de escritorio en Java inspirada en *The Matrix*.  
-Su propósito es mantener el sistema “despierto” simulando actividad mínima del usuario, con una interfaz gráfica simple y control sobre su ejecución.
+**RedPill** es una aplicación de escritorio multiplataforma escrita en Java e inspirada en *The Matrix*.
 
-> *“You take the red pill — you stay in Wonderland.”*
+Su propósito es mantener el sistema despierto simulando una cantidad mínima de actividad, ofreciendo una interfaz gráfica simple, detección de actividad humana y control sobre su ejecución.
+
+> **“You take the red pill — you stay in Wonderland.”**
 
 ---
 
 ## 🧠 ¿Qué hace?
 
-- Mueve el cursor del mouse siguiendo una secuencia de actividad
-- Presiona la tecla **SHIFT**
-- Repite la acción en intervalos configurables
+- Simula actividad mediante movimientos del cursor y pulsaciones de **SHIFT**
+- Permite configurar el intervalo entre acciones
 - Ejecuta una acción inmediatamente al iniciar
-- Detecta actividad real del mouse o teclado
-- Permite detener o continuar el proceso cuando detecta actividad humana
+- Detecta actividad real del mouse y teclado
+- Pausa automáticamente al detectar actividad humana
+- Permite decidir si detener o continuar la simulación
+- Continúa automáticamente si no hay respuesta después de **10 segundos**
 - Muestra un registro de las acciones realizadas
-- Puede permanecer ejecutándose desde el **System Tray**
-- Ayuda a evitar que el sistema entre en reposo por inactividad
+- Puede permanecer disponible desde el área de notificación del sistema
+- Permite detener y reanudar la simulación sin cerrar la aplicación
+- Ayuda a evitar que el sistema entre en reposo o bloquee la sesión
 
-No espía, no envía información, no persiste ocultamente y no hace nada más.
+Cuando la simulación se detiene, RedPill puede permanecer ejecutándose en segundo plano y accesible desde el área de notificación del sistema:
+
+- En **Windows**, desde los iconos del área de notificación junto al reloj
+- En **macOS**, desde la barra de menús
+
+Desde allí puedes volver a abrir RedPill y reactivar la simulación cuando la necesites.
+
+RedPill no recopila información, no envía datos y no instala servicios en el sistema.
 
 ---
 
-## ⚙️ Requisitos
+## 📦 Descarga
 
-### Desarrollo
+RedPill está disponible como aplicación empaquetada y autocontenida.
+
+**No necesitas instalar Java, Gradle ni configurar un entorno de desarrollo para utilizarla.**
+
+### RedPill v1.0.0
+
+La primera versión estable incluye paquetes para:
+
+- 🪟 **Windows x64**
+- 🍎 **macOS ARM64 (Apple Silicon)**
+
+👉 [Descargar la última versión de RedPill](https://github.com/scuitinob/redpill/releases/latest)
+
+También puedes consultar todas las versiones publicadas en:
+
+👉 [GitHub Releases](https://github.com/scuitinob/redpill/releases)
+
+> Actualmente no se incluyen builds para Linux ni macOS Intel debido a que estas plataformas todavía no han sido probadas.
+
+La versión de macOS puede solicitar permisos del sistema durante la primera ejecución para permitir la detección y simulación de actividad.
+
+---
+
+## ▶️ Uso
+
+1. Descarga el paquete correspondiente a tu sistema operativo
+2. Instala o ejecuta **RedPill**
+3. Selecciona el intervalo entre acciones
+4. Presiona **START**
+5. RedPill realizará inmediatamente la primera acción
+6. Mientras permanezca activo, repetirá la secuencia según el intervalo seleccionado
+
+Si RedPill detecta actividad real del mouse o teclado, pausará temporalmente su actividad y preguntará si deseas detenerla.
+
+Si no se selecciona ninguna opción durante **10 segundos**, RedPill continuará automáticamente.
+
+Puedes detener la simulación mediante:
+
+- El botón **STOP**
+- La opción **Sí, detener** cuando se detecte actividad humana
+
+Detener la simulación **no cierra RedPill**.
+
+La aplicación puede permanecer disponible en segundo plano desde:
+
+- El **System Tray** de Windows
+- La **barra de menús** de macOS
+
+Desde allí puedes volver a acceder a RedPill y activar nuevamente la simulación sin necesidad de iniciar otra instancia de la aplicación.
+
+Para finalizar RedPill completamente, utiliza la opción de salida de la aplicación.
+
+---
+
+## 🛠️ Desarrollo desde código fuente
+
+Si quieres ejecutar, modificar o compilar RedPill desde su código fuente necesitarás:
 
 - Java 21 LTS
 - Gradle 9.7.1
@@ -37,7 +103,7 @@ No espía, no envía información, no persiste ocultamente y no hace nada más.
 
 El proyecto incluye **Gradle Wrapper**, por lo que no es necesario instalar Gradle globalmente.
 
-### Ejecución desde código fuente
+### Ejecutar desde código fuente
 
 Windows:
 
@@ -83,26 +149,6 @@ java -jar build/libs/redpill-<version>.jar
 
 ---
 
-## ▶️ Uso
-
-1. Ejecuta **RedPill**
-2. Selecciona el intervalo entre acciones
-3. Presiona **START**
-4. RedPill realizará inmediatamente la primera acción
-5. Mientras permanezca activo, repetirá la secuencia según el intervalo seleccionado
-
-Si RedPill detecta movimiento del mouse o actividad del teclado, pausará temporalmente el proceso y preguntará si deseas detenerlo.
-
-Si no se selecciona ninguna opción durante **10 segundos**, RedPill continuará automáticamente.
-
-Para detenerlo manualmente:
-
-- Presiona **STOP**
-- Selecciona **Sí, detener** al detectarse actividad humana
-- Sal de la aplicación desde el System Tray
-
----
-
 ## 📁 Estructura del proyecto
 
 ```text
@@ -142,16 +188,21 @@ redpill/
 
 ## 🔴 Filosofía
 
-- Pequeño.
-- Simple.
-- Portable.
-- Multiplataforma.
-- Sin telemetría.
-- Sin fricción.
+RedPill pretende mantenerse fiel a una idea sencilla:
 
-RedPill no intenta hackear ni ocultarse del sistema.
+- Pequeño
+- Simple
+- Portable
+- Multiplataforma
+- Sin telemetría
+- Sin servicios innecesarios
+- Sin fricción
 
-Solo lo mantiene despierto.
+RedPill no intenta administrar ni modificar el sistema.
+
+Puede permanecer disponible en segundo plano mientras la aplicación está abierta, permitiendo detener y reanudar su función cuando sea necesario.
+
+Al salir completamente de RedPill, no deja servicios ni procesos propios ejecutándose.
 
 ---
 
@@ -161,19 +212,22 @@ Solo lo mantiene despierto.
 
 Ambos persiguen el mismo objetivo utilizando enfoques diferentes:
 
-**BluePill** apuesta por la simplicidad de un pequeño script en Python.
+**BluePill** apuesta por la simplicidad de una pequeña utilidad escrita en Python, diseñada para ejecutarse directamente y mantenerse deliberadamente mínima.
 
-**RedPill** lleva la misma idea a Java, incorporando interfaz gráfica, detección de actividad humana, configuración y soporte multiplataforma.
+**RedPill** lleva la misma idea a Java mediante una aplicación de escritorio con interfaz gráfica, detección de actividad humana, registro de actividad, configuración y acceso desde el área de notificación del sistema.
 
-Dos píldoras.  
+Dos píldoras.
+
 La misma Matrix.
 
 ---
 
-## 👤 Author
+## 👨‍💻 Autor
 
-**Sergio Cuitiño**
+Desarrollado por **Corvin Develop**.
 
-GitHub: [@scuitinob](https://github.com/scuitinob)
+---
 
-Developed under **Corvin Develop**.
+<p align="center">
+  <strong>Corvin Develop</strong>
+</p>
